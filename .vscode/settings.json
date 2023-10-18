@@ -1,0 +1,8 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\arnarae\\OneDrive\\HR\\T-301-REIR Reiknirit\\S3\\algs4.jar"
+    ]
+}
