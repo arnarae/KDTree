@@ -9,43 +9,109 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Out;
 
 public class KdTree {
-    // construct an empty set of points
+    private Node root;
+    private int size;
+
+    private static class Node {
+        private Point2D point;
+        private RectHV rect;
+        private Node left;
+        private Node right;
+
+        public Node(Point2D point, RectHV rect) {
+            this.point = point;
+            this.rect = rect;
+        }
+    }
+
     public KdTree() {
+        root = null;
+        size = 0;
     }
 
-    // is the set empty?
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
-    // number of points in the set
     public int size() {
-        return 0;
+        return size;
     }
 
-    // add the point p to the set (if it is not already in the set)
     public void insert(Point2D p) {
-    };
+        root = insert(root, p, true, new RectHV(0, 0, 1, 1));
+    }
 
-    // does the set contain the point p?
+    private Node insert(Node node, Point2D p, boolean isVertical, RectHV rect) {
+        if (node == null) {
+            size++;
+            return new Node(p, rect);
+        }
+
+        if (node.point.equals(p)) {
+            return node;
+        }
+
+        int cmp;
+        if (isVertical) {
+            cmp = Double.compare(p.x(), node.point.x());
+            if (cmp < 0) {
+                node.left = insert(node.left, p, !isVertical, new RectHV(rect.xmin(), rect.ymin(), node.point.x(), rect.ymax()));
+            } else {
+                node.right = insert(node.right, p, !isVertical, new RectHV(node.point.x(), rect.ymin(), rect.xmax(), rect.ymax()));
+            }
+        } else {
+            cmp = Double.compare(p.y(), node.point.y());
+            if (cmp < 0) {
+                node.left = insert(node.left, p, !isVertical, new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), node.point.y()));
+            } else {
+                node.right = insert(node.right, p, !isVertical, new RectHV(rect.xmin(), node.point.y(), rect.xmax(), rect.ymax()));
+            }
+        }
+
+        return node;
+    }
+
     public boolean contains(Point2D p) {
-        return false;
+        return contains(root, p, true);
     }
 
-    // draw all of the points to standard draw
+    private boolean contains(Node node, Point2D p, boolean isVertical) {
+        if (node == null) {
+            return false;
+        }
+
+        if (node.point.equals(p)) {
+            return true;
+        }
+
+        int cmp;
+        if (isVertical) {
+            cmp = Double.compare(p.x(), node.point.x());
+        } else {
+            cmp = Double.compare(p.y(), node.point.y());
+        }
+
+        if (cmp < 0) {
+            return contains(node.left, p, !isVertical);
+        } else {
+            return contains(node.right, p, !isVertical);
+        }
+    }
+
     public void draw() {
-
+        // Implement drawing logic here
     }
 
-    // all points in the set that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
+        // Implement range search logic here
         return null;
     }
 
-    // a nearest neighbor in the set to p; null if set is empty
     public Point2D nearest(Point2D p) {
+        // Implement nearest neighbor search logic here
         return p;
     }
+}
 
     /*******************************************************************************
      * Test client
