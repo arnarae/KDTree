@@ -60,13 +60,13 @@ public class PointSET {
 
     // all points in the set that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
-        SET<Point2D> pointsInsideRect = new SET<Point2D>();
+        SET<Point2D> pointsInRect = new SET<Point2D>();
         for (Point2D p : pointSet) {
             if (rect.contains(p)) {
-                pointsInsideRect.add(p);
+                pointsInRect.add(p);
             }
         }
-        return pointsInsideRect;
+        return pointsInRect;
     }
 
     // a nearest neighbor in the set to p; null if set is empty
@@ -78,9 +78,9 @@ public class PointSET {
             double minDistance = Double.POSITIVE_INFINITY;
 
             for (Point2D point : pointSet) {
-                double distance = p.distanceTo(point);
-                if (distance < minDistance) {
-                    minDistance = distance;
+                double newDistance = p.distanceTo(point);
+                if (newDistance < minDistance) {
+                    minDistance = newDistance;
                     nearestPoint = point;
                 }
             }
