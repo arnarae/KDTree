@@ -36,35 +36,42 @@ public class KdTree {
     }
 
     public void insert(Point2D p) {
-        root = insert(root, p, true, 0, 0, 1, 1);
+        root = insert(root, p, true, new RectHV(0, 0, 1, 1));
     }
 
-    private Node insert(Node node, Point2D p, boolean isVertical, double xmin, double ymin, double xmax, double ymax) {
+    private Node insert(Node node, Point2D p, boolean isVertical, RectHV rect) {
         if (node == null) {
             size++;
-            return new Node(p, new RectHV(xmin, ymin, xmax, ymax));
+            return new Node(p, rect);
         }
 
         if (node.point.equals(p)) {
             return node;
         }
 
-        int cmp = isVertical ? Double.compare(p.x(), node.point.x()) : Double.compare(p.y(), node.point.y());
+        int cmp;
+        RectHV nextRect;
 
-        if (cmp < 0) {
-            if (isVertical) {
-                node.left = insert(node.left, p, !isVertical, xmin, ymin, node.point.x(), ymax);
+        if (isVertical) {
+            cmp = Double.compare(p.x(), node.point.x());
+            if (cmp < 0) {
+                nextRect = new RectHV(rect.xmin(), rect.ymin(), node.point.x(), rect.ymax());
+                node.left = insert(node.left, p, !isVertical, nextRect);
             } else {
-                node.left = insert(node.left, p, !isVertical, xmin, ymin, xmax, node.point.y());
+                nextRect = new RectHV(node.point.x(), rect.ymin(), rect.xmax(), rect.ymax());
+                node.right = insert(node.right, p, !isVertical, nextRect);
             }
         } else {
-            if (isVertical) {
-                node.right = insert(node.right, p, !isVertical, node.point.x(), ymin, xmax, ymax);
+            cmp = Double.compare(p.y(), node.point.y());
+            if (cmp < 0) {
+                nextRect = new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), node.point.y());
+                node.left = insert(node.left, p, !isVertical, nextRect);
             } else {
-                node.right = insert(node.right, p, !isVertical, xmin, node.point.y(), xmax, ymax);
+                nextRect = new RectHV(rect.xmin(), node.point.y(), rect.xmax(), rect.ymax());
+                node.right = insert(node.right, p, !isVertical, nextRect);
             }
         }
-
+        
         return node;
     }
 
@@ -145,48 +152,54 @@ public class KdTree {
         if (isEmpty()) {
             return null;
         }
-
+    
         return nearest(root, p, root.point, true);
     }
-
+    
     private Point2D nearest(Node node, Point2D query, Point2D closest, boolean isVertical) {
         if (node == null) {
             return closest;
         }
-
+    
         double closestDist = closest.distanceTo(query);
         double currDist = node.point.distanceTo(query);
-
+    
         if (currDist < closestDist) {
             closest = node.point;
         }
-
-        double firstDist, secondDist;
-        Node firstNode, secondNode;
-
+    
+        RectHV rectToCheck = null; // Initialize a variable to check if the node's rect is null
+        if (node.rect != null) {
+            rectToCheck = node.rect;
+        }
+    
         if (isVertical) {
-            firstNode = node.left;
-            secondNode = node.right;
-            firstDist = query.x() - node.point.x();
-            secondDist = firstNode.rect.distanceTo(query);
+            if (query.x() < node.point.x()) {
+                closest = nearest(node.left, query, closest, !isVertical);
+                if (node.right != null && rectToCheck != null && node.right.rect.distanceTo(query) < closest.distanceTo(query)) {
+                    closest = nearest(node.right, query, closest, !isVertical);
+                }
+            } else {
+                closest = nearest(node.right, query, closest, !isVertical);
+                if (node.left != null && rectToCheck != null && node.left.rect.distanceTo(query) < closest.distanceTo(query)) {
+                    closest = nearest(node.left, query, closest, !isVertical);
+                }
+            }
         } else {
-            firstNode = query.y() < node.point.y() ? node.left : node.right;
-            secondNode = firstNode == node.left ? node.right : node.left;
-            firstDist = query.y() - node.point.y();
-            secondDist = firstNode.rect.distanceTo(query);
+            if (query.y() < node.point.y()) {
+                closest = nearest(node.left, query, closest, !isVertical);
+                if (node.right != null && rectToCheck != null && node.right.rect.distanceTo(query) < closest.distanceTo(query)) {
+                    closest = nearest(node.right, query, closest, !isVertical);
+                }
+            } else {
+                closest = nearest(node.right, query, closest, !isVertical);
+                if (node.left != null && rectToCheck != null && node.left.rect.distanceTo(query) < closest.distanceTo(query)) {
+                    closest = nearest(node.left, query, closest, !isVertical);
+                }
+            }
         }
-
-        if (firstDist < 0) {
-            firstNode = secondNode;
-            secondNode = node.right;
-        }
-
-        closest = nearest(firstNode, query, closest, !isVertical);
-
-        if (secondDist < closest.distanceTo(query)) {
-            closest = nearest(secondNode, query, closest, !isVertical);
-        }
-
+    
         return closest;
     }
 }
+    
