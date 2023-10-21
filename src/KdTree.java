@@ -36,10 +36,10 @@ public class KdTree {
     }
 
     public void insert(Point2D p) {
-        root = insert(root, p, true, new RectHV(0, 0, 1, 1));
+        root = insertHelper(root, p, true, new RectHV(0, 0, 1, 1));
     }
 
-    private Node insert(Node node, Point2D p, boolean isVertical, RectHV rect) {
+    private Node insertHelper(Node node, Point2D p, boolean isVertical, RectHV rect) {
         if (node == null) {
             size++;
             return new Node(p, rect);
@@ -56,19 +56,19 @@ public class KdTree {
             cmp = Double.compare(p.x(), node.point.x());
             if (cmp < 0) {
                 nextRect = new RectHV(rect.xmin(), rect.ymin(), node.point.x(), rect.ymax());
-                node.left = insert(node.left, p, !isVertical, nextRect);
+                node.left = insertHelper(node.left, p, !isVertical, nextRect);
             } else {
                 nextRect = new RectHV(node.point.x(), rect.ymin(), rect.xmax(), rect.ymax());
-                node.right = insert(node.right, p, !isVertical, nextRect);
+                node.right = insertHelper(node.right, p, !isVertical, nextRect);
             }
         } else {
             cmp = Double.compare(p.y(), node.point.y());
             if (cmp < 0) {
                 nextRect = new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), node.point.y());
-                node.left = insert(node.left, p, !isVertical, nextRect);
+                node.left = insertHelper(node.left, p, !isVertical, nextRect);
             } else {
                 nextRect = new RectHV(rect.xmin(), node.point.y(), rect.xmax(), rect.ymax());
-                node.right = insert(node.right, p, !isVertical, nextRect);
+                node.right = insertHelper(node.right, p, !isVertical, nextRect);
             }
         }
         
@@ -77,10 +77,10 @@ public class KdTree {
 
 
     public boolean contains(Point2D p) {
-        return contains(root, p, true);
+        return containsHelper(root, p, true);
     }
 
-    private boolean contains(Node node, Point2D p, boolean isVertical) {
+    private boolean containsHelper(Node node, Point2D p, boolean isVertical) {
         if (node == null) {
             return false;
         }
@@ -92,9 +92,9 @@ public class KdTree {
         int cmp = isVertical ? Double.compare(p.x(), node.point.x()) : Double.compare(p.y(), node.point.y());
 
         if (cmp < 0) {
-            return contains(node.left, p, !isVertical);
+            return containsHelper(node.left, p, !isVertical);
         } else {
-            return contains(node.right, p, !isVertical);
+            return containsHelper(node.right, p, !isVertical);
         }
     }
 
@@ -161,8 +161,8 @@ public class KdTree {
             return closest;
         }
     
-        double closestDist = closest.distanceTo(query);
-        double currDist = node.point.distanceTo(query);
+        double closestDist = closest.distanceSquaredTo(query);
+        double currDist = node.point.distanceSquaredTo(query);
     
         if (currDist < closestDist) {
             closest = node.point;
@@ -176,24 +176,24 @@ public class KdTree {
         if (isVertical) {
             if (query.x() < node.point.x()) {
                 closest = nearest(node.left, query, closest, !isVertical);
-                if (node.right != null && rectToCheck != null && node.right.rect.distanceTo(query) < closest.distanceTo(query)) {
+                if (node.right != null && rectToCheck != null && node.right.rect.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
                     closest = nearest(node.right, query, closest, !isVertical);
                 }
             } else {
                 closest = nearest(node.right, query, closest, !isVertical);
-                if (node.left != null && rectToCheck != null && node.left.rect.distanceTo(query) < closest.distanceTo(query)) {
+                if (node.left != null && rectToCheck != null && node.left.rect.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
                     closest = nearest(node.left, query, closest, !isVertical);
                 }
             }
         } else {
             if (query.y() < node.point.y()) {
                 closest = nearest(node.left, query, closest, !isVertical);
-                if (node.right != null && rectToCheck != null && node.right.rect.distanceTo(query) < closest.distanceTo(query)) {
+                if (node.right != null && rectToCheck != null && node.right.rect.distanceSquaredTo(query) < closest.distandistanceSquaredToeTo(query)) {
                     closest = nearest(node.right, query, closest, !isVertical);
                 }
             } else {
                 closest = nearest(node.right, query, closest, !isVertical);
-                if (node.left != null && rectToCheck != null && node.left.rect.distanceTo(query) < closest.distanceTo(query)) {
+                if (node.left != null && rectToCheck != null && node.left.rect.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
                     closest = nearest(node.left, query, closest, !isVertical);
                 }
             }

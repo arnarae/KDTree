@@ -4,10 +4,10 @@
 **********************************************************************/
 
 Name 1:    
-kt 1:   
+kt 1:   Arnar Ã†gisson
 
 Name 2:    
-kt 2:   
+kt 2:   Eggert HÃ³lm PÃ¡lsson
 
 /**********************************************************************
  *  Briefly describe the Node data type you used to implement the
@@ -37,9 +37,9 @@ kt 2:
 
 bytes per Point2D: 32 bytes
 
-bytes per RectHV:
+bytes per RectHV: 256 bytes
 
-bytes per KdTree of N points (using tilde notation):   ~
+bytes per KdTree of N points (using tilde notation):   ~350N
 [include the memory for any referenced Node, Point2D and RectHV objects]
 
 
@@ -80,7 +80,7 @@ input1M.txt
 
 /**********************************************************************
  *  Describe whatever help (if any) that you received.
- *  Don't include readings, lectures, and dæmatímar, but do
+ *  Don't include readings, lectures, and dï¿½matï¿½mar, but do
  *  include any help from people (including course staff, 
  *  classmates, and friends) and attribute them by name.
  **********************************************************************/
