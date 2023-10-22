@@ -11,7 +11,6 @@ public class Main {
         System.out.println(new_tree.contains(new_point));
         System.out.println(new_tree.size());
         System.out.println(new_tree.isEmpty());
-        new_point = new Point2D(492470.049, -488525.6);
         new_tree.insert(new_point);
         new_tree.insert(new_point);
         System.out.println(new_tree.size());
