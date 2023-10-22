@@ -90,23 +90,30 @@ Find nearest Time PointSet: 2.039 seconds for 1000 searches.
 Find nearest Time PointSet: 6.168 seconds for 2000 searches.
 Find nearest Time PointSet: 10.841 seconds for 4000 searches.
 Find nearest Time PointSet: 17.843 seconds for 8000 searches.
+PointSet has on average 408 nearest searches per second.
+calclulated by finding the average og each test i.e. searches/seconds
 
 Find nearest Time KdTree: 1.582 seconds for 1000 searches.
 Find nearest Time KdTree: 5.992 seconds for 2000 searches.
-Find nearest Time KdTree: 10.61 seconds for 4000 searches.
+Find nearest Time KdTree: 10.610 seconds for 4000 searches.
 Find nearest Time KdTree: 16.601 seconds for 8000 searches.
+Kdtree has on average 456 nearest searches per second.
+calclulated by finding the average og each test i.e. searches/seconds
 
 input1M.txt
 Find nearest Time PointSet: 28.587 seconds for 1000 searches.
 Find nearest Time PointSet: 76.164 seconds for 2000 searches.
 Find nearest Time PointSet: 167.593 seconds for 4000 searches.
 Find nearest Time PointSet: 312.681 seconds for 8000 searches.
+PointSet has on average 27 nearest searches per second.
+calclulated by finding the average og each test i.e. searches/seconds
 
 Find nearest Time KdTree: 23.177 seconds for 1000 searches.
 Find nearest Time KdTree: 71.615 seconds for 2000 searches.
 Find nearest Time KdTree: 175.011 seconds for 4000 searches.
 Find nearest Time KdTree: 305.059 seconds for 8000 searches.
-
+Kdtree has on average 30 nearest searches per second.
+calclulated by finding the average og each test i.e. searches/seconds
 
 /**********************************************************************
  *  Known bugs / limitations.
