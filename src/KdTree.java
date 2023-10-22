@@ -1,10 +1,7 @@
-import java.util.Arrays;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Out;
 
 public class KdTree {
     private Node root;
@@ -34,7 +31,7 @@ public class KdTree {
     public int size() {
         return size;
     }
-
+    // Adds a point to tree, uses the helper to do it recursively
     public void insert(Point2D p) {
         root = insertHelper(root, p, true, new RectHV(0, 0, 1, 1));
     }
@@ -43,15 +40,12 @@ public class KdTree {
         if (node == null) {
             size++;
             return new Node(p, rect);
-        }
-    
+        }    
         if (node.point.equals(p)) {
             return node;
-        }
-    
+        }    
         int cmp;
-        RectHV nextRect;
-    
+        RectHV nextRect;    
         if (isVertical) {
             cmp = Double.compare(p.x(), node.point.x());
             if (cmp < 0) {
@@ -74,13 +68,12 @@ public class KdTree {
                 nextRect = new RectHV(rect.xmin(), ymin, rect.xmax(), rect.ymax());
                 node.right = insertHelper(node.right, p, !isVertical, nextRect);
             }
-        }
-        
+        }        
         return node;
     }
     
 
-
+    // Checks if a point exists in the tree, uses the helper to do it recursively
     public boolean contains(Point2D p) {
         return containsHelper(root, p, true);
     }
@@ -89,13 +82,10 @@ public class KdTree {
         if (node == null) {
             return false;
         }
-
         if (node.point.equals(p)) {
             return true;
         }
-
         int cmp = isVertical ? Double.compare(p.x(), node.point.x()) : Double.compare(p.y(), node.point.y());
-
         if (cmp < 0) {
             return containsHelper(node.left, p, !isVertical);
         } else {
@@ -109,12 +99,9 @@ public class KdTree {
 
     private void draw(Node node, boolean isVertical) {
         if (node != null) {
-            // Draw the point
             StdDraw.setPenColor(StdDraw.BLACK);
             StdDraw.setPenRadius(0.01);
             node.point.draw();
-
-            // Draw the dividing line based on orientation
             if (isVertical) {
                 StdDraw.setPenColor(StdDraw.RED);
                 StdDraw.setPenRadius();
@@ -124,13 +111,11 @@ public class KdTree {
                 StdDraw.setPenRadius();
                 StdDraw.line(node.rect.xmin(), node.point.y(), node.rect.xmax(), node.point.y());
             }
-
-            // Recursively draw left and right subtrees
             draw(node.left, !isVertical);
             draw(node.right, !isVertical);
         }
     }
-
+    // makes an ittarable out of the tree using Queue
     public Iterable<Point2D> range(RectHV rect) {
         Queue<Point2D> pointsInRange = new Queue<>();
         range(root, rect, pointsInRange);
@@ -152,16 +137,16 @@ public class KdTree {
             }
         }
     }
-
+    // Finds the neares point to given point in the tree, uses the helper to do it recursively, returns null if tree is empty
     public Point2D nearest(Point2D p) {
         if (isEmpty()) {
             return null;
         }
     
-        return nearest(root, p, root.point, true);
+        return nearestHelper(root, p, root.point, true);
     }
     
-    private Point2D nearest(Node node, Point2D query, Point2D closest, boolean isVertical) {
+    private Point2D nearestHelper(Node node, Point2D query, Point2D closest, boolean isVertical) {
         if (node == null) {
             return closest;
         }
@@ -173,33 +158,39 @@ public class KdTree {
             closest = node.point;
         }
     
-        RectHV rectToCheck = null; // Initialize a variable to check if the node's rect is null
-        if (node.rect != null) {
-            rectToCheck = node.rect;
-        }
+        RectHV rectToCheck = node.rect;
     
         if (isVertical) {
             if (query.x() < node.point.x()) {
-                closest = nearest(node.left, query, closest, !isVertical);
-                if (node.right != null && rectToCheck != null && node.right.rect.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
-                    closest = nearest(node.right, query, closest, !isVertical);
+                closest = nearestHelper(node.left, query, closest, !isVertical);
+    
+                if (node.right != null && rectToCheck.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
+                    closest = nearestHelper(node.right, query, closest, !isVertical);
                 }
             } else {
-                closest = nearest(node.right, query, closest, !isVertical);
-                if (node.left != null && rectToCheck != null && node.left.rect.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
-                    closest = nearest(node.left, query, closest, !isVertical);
+                closest = nearestHelper(node.right, query, closest, !isVertical);
+    
+                if (node.left != null && rectToCheck.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
+                    closest = nearestHelper(node.left, query, closest, !isVertical);
                 }
             }
-        if (node.right != null && rectToCheck != null && node.right.rect.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
-            closest = nearest(node.right, query, closest, !isVertical);
-        }
-
-        if (node.left != null && rectToCheck != null && node.left.rect.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
-            closest = nearest(node.left, query, closest, !isVertical);
+        } else {
+            if (query.y() < node.point.y()) {
+                closest = nearestHelper(node.left, query, closest, !isVertical);
+    
+                if (node.right != null && rectToCheck.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
+                    closest = nearestHelper(node.right, query, closest, !isVertical);
+                }
+            } else {
+                closest = nearestHelper(node.right, query, closest, !isVertical);
+    
+                if (node.left != null && rectToCheck.distanceSquaredTo(query) < closest.distanceSquaredTo(query)) {
+                    closest = nearestHelper(node.left, query, closest, !isVertical);
+                }
+            }
         }
         
+        return closest;
     }
-    return closest;
-}
 }
     
